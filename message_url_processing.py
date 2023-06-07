@@ -1,17 +1,24 @@
 import urllib.parse
 import re
 
-regex = r"(?:\s|^)(https?://(?:www\.)?(?:twitter\.com|instagram\.com)/\S+)"
+regex_not_spoiler = r"(https?://(?:www\.)?(?:twitter\.com|instagram\.com)/[^\|\s]+)"
+regex_spoiler = r"(?:(?<=\|\|\s)|(?<=\|\|))(https?://(?:www\.)?(?:twitter\.com|instagram\.com)/\S+)(?=\s*\|\|)"
 instagram_url = 'www.instagram.com'
 twitter_url = 'twitter.com'
 instagram_url_embeddable = 'www.ddinstagram.com'
 twitter_url_embeddable = 'vxtwitter.com'
+message = 'fdgdf ||http://www.instagram.com/usernamehttpsasfdsdfsdfshtt|| https://twitter.com/sdfsdfsdfsdfsdf'
+
+def extract_url_from_message(message: str) -> tuple | None:
+    raw_urls = re.findall(regex_not_spoiler, message)
+    parsed_urls = [urllib.parse.urlparse(url) for url in raw_urls]
+    return raw_urls, parsed_urls
 
 
-def extract_url_from_message(message: str) -> list | None:
-    urls_to_parse = re.findall(regex, message)
-    urls = [urllib.parse.urlparse(url) for url in urls_to_parse]
-    return urls
+def does_contain_urls(message: str) -> bool:
+    if len(extract_url_from_message(message)[0]) > 0:
+        return True
+    return False
 
 
 def make_url_embeddable(url_in: list) -> list:
@@ -24,3 +31,10 @@ def make_url_embeddable(url_in: list) -> list:
             new_url = url._replace(netloc=instagram_url_embeddable)
             urls_out.append(urllib.parse.urlunparse(new_url))
     return urls_out
+
+
+def replace_urls_with_embeddables(message_in: str, raw_urls: list, embeddable_urls: list) -> str:
+    new_message = message_in
+    for old_url, new_url in zip(raw_urls, embeddable_urls):
+        new_message = new_message.replace(old_url, new_url)
+    return new_message

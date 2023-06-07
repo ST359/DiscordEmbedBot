@@ -1,9 +1,9 @@
 import discord
 from discord.ext.commands import Bot
-from message_url_processing import make_url_embeddable, extract_url_from_message
+from message_url_processing import make_url_embeddable, extract_url_from_message, does_contain_urls, \
+    replace_urls_with_embeddables
 from video_convertion import convert_video
 import os
-
 
 intents = discord.Intents.default()
 intents.messages = True
@@ -37,11 +37,15 @@ async def on_message(message):
                 os.remove(f'video_to_convert/{attach.filename}')
                 os.remove('converted_vids/output.mp4')
 
-
     if is_enabled:
         message_str: str = message.content
-        urls = make_url_embeddable(extract_url_from_message(message_str))
-        for url in urls:
-            await message.channel.send(url)
+        if does_contain_urls(message_str):
+            raw_urls, parsed_urls = extract_url_from_message(message_str)
+            embeddable_urls = make_url_embeddable(parsed_urls)
+            new_message_content = replace_urls_with_embeddables(message_str, raw_urls, embeddable_urls)
+            new_message = '**'+message.author.display_name+'**' + '\n' + '\n' + new_message_content
+            await message.channel.send(new_message)
+            await message.delete()
+
 
 client.run(os.getenv('TOKEN'))
