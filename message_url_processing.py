@@ -3,7 +3,7 @@ import re
 
 regex_not_spoiler = r"(https?://(?:www\.)?(?:twitter\.com|instagram\.com)/[^\|\s]+)"
 regex_spoiler = r"(?:(?<=\|\|\s)|(?<=\|\|))(https?://(?:www\.)?(?:twitter\.com|instagram\.com)/\S+)(?=\s*\|\|)"
-instagram_url = 'www.instagram.com'
+instagram_url = ('www.instagram.com', 'instagram.com')
 twitter_url = 'twitter.com'
 instagram_url_embeddable = 'www.ddinstagram.com'
 twitter_url_embeddable = 'vxtwitter.com'
@@ -27,7 +27,7 @@ def make_url_embeddable(url_in: list) -> list:
         if url.netloc == twitter_url:
             new_url = url._replace(netloc=twitter_url_embeddable)
             urls_out.append(urllib.parse.urlunparse(new_url))
-        elif url.netloc == instagram_url:
+        elif url.netloc in instagram_url:
             new_url = url._replace(netloc=instagram_url_embeddable)
             urls_out.append(urllib.parse.urlunparse(new_url))
     return urls_out
