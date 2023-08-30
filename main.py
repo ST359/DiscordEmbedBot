@@ -39,13 +39,18 @@ async def on_message(message):
 
     if is_enabled:
         message_str: str = message.content
+        message_replied_to = message.reference
         if does_contain_urls(message_str):
             raw_urls, parsed_urls = extract_url_from_message(message_str)
             embeddable_urls = make_url_embeddable(parsed_urls)
             new_message_content = replace_urls_with_embeddables(message_str, raw_urls, embeddable_urls)
-            new_message = '**'+message.author.display_name+'**' + '\n' + '\n' + new_message_content
-            await message.channel.send(new_message)
-            await message.delete()
+            new_message = '**' + message.author.display_name + '**' + '\n' + '\n' + new_message_content
+            if message_replied_to is not None:
+                await message.channel.send(content=new_message, reference=message_replied_to, mention_author=False)
+                await message.delete()
+            else:
+                await message.channel.send(new_message)
+                await message.delete()
 
 
 client.run(os.getenv('TOKEN'))
