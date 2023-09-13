@@ -9,7 +9,7 @@ instagram_url_embeddable = 'www.ddinstagram.com'
 twitter_url_embeddable = 'vxtwitter.com'
 
 
-def extract_url_from_message(message: str) -> tuple | None:
+def extract_url_from_message(message: str) -> tuple:
     raw_urls = re.findall(regex_not_spoiler, message)
     parsed_urls = [urllib.parse.urlparse(url) for url in raw_urls]
     return raw_urls, parsed_urls
