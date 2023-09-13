@@ -1,7 +1,7 @@
 import urllib.parse
 import re
 
-regex_not_spoiler = r"(https?://(?:www\.)?(?:twitter\.com|instagram\.com)/[^\|\s]+)"
+regex_not_spoiler = r"(https?://(?:www\.)?(?:twitter\.com|instagram\.com|x\.com)/[^\|\s]+)"
 regex_spoiler = r"(?:(?<=\|\|\s)|(?<=\|\|))(https?://(?:www\.)?(?:twitter\.com|instagram\.com|x\.com)/\S+)(?=\s*\|\|)"
 instagram_url = ('www.instagram.com', 'instagram.com')
 twitter_url = ('twitter.com', 'x.com')
