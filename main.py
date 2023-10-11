@@ -27,7 +27,7 @@ async def convert(ctx):
                 await message.channel.send(file=file)
                 os.remove(f'video_to_convert/{attach.filename}')
                 os.remove('converted_vids/output.mp4')
-        if message_replied_to.attachments[0]:
+        elif message_replied_to.attachments[0]:
             attach = message_replied_to.attachments[0]
             if 'video' in attach.content_type:
                 await attach.save(f'video_to_convert/{attach.filename}')
