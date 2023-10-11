@@ -13,8 +13,9 @@ is_enabled = True
 
 
 @client.command(name='convert')
-async def convert(message=discord.Interaction.message):
+async def convert(ctx):
     global is_enabled
+    message = ctx.message
     message_replied_to = message.reference
     if is_enabled:
         if message.attachments[0]:
