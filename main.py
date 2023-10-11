@@ -16,6 +16,7 @@ is_enabled = True
 async def convert(ctx):
     global is_enabled
     message = ctx.message
+    message_replied_to = None
     if message.reference:
         message_replied_to = await message.channel.fetch_message(message.reference.message_id)
     if is_enabled:
