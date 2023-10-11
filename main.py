@@ -12,6 +12,31 @@ client = Bot(command_prefix="!", intents=intents)
 is_enabled = True
 
 
+@client.command(name='convert')
+async def convert(message=discord.Interaction.message):
+    global is_enabled
+    message_replied_to = message.reference
+    if is_enabled:
+        if message.attachments[0]:
+            attach = message.attachments[0]
+            if 'video' in attach.content_type:
+                await attach.save(f'video_to_convert/{attach.filename}')
+                convert_video(f'video_to_convert/{attach.filename}')
+                file = discord.File('converted_vids/output.mp4')
+                await message.channel.send(file=file)
+                os.remove(f'video_to_convert/{attach.filename}')
+                os.remove('converted_vids/output.mp4')
+        if message_replied_to.attachments[0]:
+            attach = message_replied_to.attachments[0]
+            if 'video' in attach.content_type:
+                await attach.save(f'video_to_convert/{attach.filename}')
+                convert_video(f'video_to_convert/{attach.filename}')
+                file = discord.File('converted_vids/output.mp4')
+                await message.channel.send(file=file)
+                os.remove(f'video_to_convert/{attach.filename}')
+                os.remove('converted_vids/output.mp4')
+
+
 @client.event
 async def on_message(message):
     global is_enabled
@@ -26,16 +51,6 @@ async def on_message(message):
         if not is_enabled:
             await message.channel.send('Enabled. To disable type "!shut"')
             is_enabled = True
-    if message.content == '!convert' and is_enabled:
-        if message.attachments[0]:
-            attach = message.attachments[0]
-            if 'video' in attach.content_type:
-                await attach.save(f'video_to_convert/{attach.filename}')
-                convert_video(f'video_to_convert/{attach.filename}')
-                file = discord.File('converted_vids/output.mp4')
-                await message.channel.send(file=file)
-                os.remove(f'video_to_convert/{attach.filename}')
-                os.remove('converted_vids/output.mp4')
 
     if is_enabled:
         message_str: str = message.content
@@ -51,6 +66,7 @@ async def on_message(message):
             else:
                 await message.channel.send(new_message)
                 await message.delete()
+    await client.process_commands(message)
 
 
 client.run(os.getenv('TOKEN'))
