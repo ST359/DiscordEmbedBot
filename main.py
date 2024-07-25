@@ -1,7 +1,7 @@
 import discord
 from discord.ext.commands import Bot
 from message_url_processing import make_url_embeddable, extract_url_from_message, does_contain_urls, \
-    replace_urls_with_embeddables
+    replace_urls_with_embeddables, extract_ddinsta_url_from_message, fix_failed_ddinstagram_url
 from video_convertion import convert_video
 import os
 
@@ -10,6 +10,8 @@ intents.messages = True
 intents.message_content = True
 client = Bot(command_prefix="!", intents=intents)
 is_enabled = True
+
+post_not_found = 'Post not found'
 async def process_attachment_to_convert(message):
     attach = message.attachments[0]
     if 'video' in attach.content_type:
@@ -38,6 +40,11 @@ async def convert(ctx):
 async def on_message(message):
     global is_enabled
     if message.author == client.user:
+        if message.embeds[0].description == post_not_found and message.embeds[0].title == 'InstaFix':
+            raw_urls, parsed_urls = extract_ddinsta_url_from_message(message.content)
+            embeddable_urls = fix_failed_ddinstagram_url(parsed_urls)
+            new_message_content = replace_urls_with_embeddables(message.content, raw_urls, embeddable_urls)
+            await message.edit(content = new_message_content)
         return
 
     if message.content == '!shut':
