@@ -10,7 +10,15 @@ intents.messages = True
 intents.message_content = True
 client = Bot(command_prefix="!", intents=intents)
 is_enabled = True
-
+async def process_attachment_to_convert(message):
+    attach = message.attachments[0]
+    if 'video' in attach.content_type:
+        await attach.save(f'video_to_convert/{attach.filename}')
+        convert_video(f'video_to_convert/{attach.filename}')
+        file = discord.File('converted_vids/output.mp4')
+        await message.channel.send(file=file)
+        os.remove(f'video_to_convert/{attach.filename}')
+        os.remove('converted_vids/output.mp4')
 
 @client.command(name='convert')
 async def convert(ctx):
@@ -21,23 +29,9 @@ async def convert(ctx):
         message_replied_to = await message.channel.fetch_message(message.reference.message_id)
     if is_enabled:
         if message.attachments:
-            attach = message.attachments[0]
-            if 'video' in attach.content_type:
-                await attach.save(f'video_to_convert/{attach.filename}')
-                convert_video(f'video_to_convert/{attach.filename}')
-                file = discord.File('converted_vids/output.mp4')
-                await message.channel.send(file=file)
-                os.remove(f'video_to_convert/{attach.filename}')
-                os.remove('converted_vids/output.mp4')
+            process_attachment_to_convert(message)
         elif message_replied_to.attachments:
-            attach = message_replied_to.attachments[0]
-            if 'video' in attach.content_type:
-                await attach.save(f'video_to_convert/{attach.filename}')
-                convert_video(f'video_to_convert/{attach.filename}')
-                file = discord.File('converted_vids/output.mp4')
-                await message.channel.send(file=file)
-                os.remove(f'video_to_convert/{attach.filename}')
-                os.remove('converted_vids/output.mp4')
+            process_attachment_to_convert(message_replied_to)
 
 
 @client.event
