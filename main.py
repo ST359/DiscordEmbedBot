@@ -12,7 +12,7 @@ intents.message_content = True
 client = Bot(command_prefix="!", intents=intents)
 is_enabled = True
 
-post_not_found = 'Post not found'
+
 async def process_attachment_to_convert(message):
     attach = message.attachments[0]
     if 'video' in attach.content_type:

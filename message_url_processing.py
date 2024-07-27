@@ -2,7 +2,7 @@ import urllib.parse
 import re
 import requests
 
-regex_post_not_found = r"(content=\"Post not found\")"
+regex_post_not_found = r"(content=\"Post not found\"|content=\"Post might not be available\")"
 regex_not_spoiler = r"(https?://(?:www\.)?(?:twitter\.com|instagram\.com|x\.com)/[^\|\s]+)"
 regex_not_spoiler_ddinsta = r"(https?://(?:www\.)?(?:ddinstagram\.com)/[^\|\s]+)"
 regex_spoiler = r"(?:(?<=\|\|\s)|(?<=\|\|))(https?://(?:www\.)?(?:twitter\.com|instagram\.com|x\.com)/\S+)(?=\s*\|\|)"
