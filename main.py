@@ -3,6 +3,7 @@ from discord.ext.commands import Bot
 from message_url_processing import make_url_embeddable, extract_url_from_message, does_contain_urls, \
     replace_urls_with_embeddables
 from video_convertion import convert_video
+from switch_layout import switch_en_to_ru
 import os
 import json
 
@@ -22,6 +23,11 @@ async def process_attachment_to_convert(message):
         await message.channel.send(file=file)
         os.remove(f'video_to_convert/{attach.filename}')
         os.remove('converted_vids/output.mp4')
+
+@client.command(name='blya')
+async def switch_lang(ctx):
+    await switch_en_to_ru(ctx)
+
 
 @client.command(name='convert')
 async def convert(ctx):
