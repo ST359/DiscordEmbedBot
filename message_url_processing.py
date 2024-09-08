@@ -23,8 +23,11 @@ def does_contain_urls(message: str) -> bool:
         return True
     return False
 def is_ddinsta_url_working(url: str) -> bool:
-    r = requests.get(url).text
-    if re.search(regex_post_not_found, r):
+    try:
+        r = requests.get(url).text
+        if re.search(regex_post_not_found, r):
+            return False
+    except:
         return False
     return True
 def make_url_embeddable(url_in: list) -> list:
