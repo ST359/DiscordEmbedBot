@@ -38,9 +38,9 @@ async def convert(ctx):
         message_replied_to = await message.channel.fetch_message(message.reference.message_id)
     if is_enabled:
         if message.attachments:
-            process_attachment_to_convert(message)
+            await process_attachment_to_convert(message)
         elif message_replied_to.attachments:
-            process_attachment_to_convert(message_replied_to)
+            await process_attachment_to_convert(message_replied_to)
 
 
 @client.event
