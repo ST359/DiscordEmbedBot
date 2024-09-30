@@ -1,6 +1,8 @@
 import urllib.parse
 import re
 import requests
+import httpx
+
 
 regex_post_not_found = r"(content=\"Post not found\"|content=\"Post might not be available\")"
 regex_not_spoiler = r"(https?://(?:www\.)?(?:twitter\.com|instagram\.com|x\.com)/[^\|\s]+)"
@@ -30,7 +32,15 @@ def is_ddinsta_url_working(url: str) -> bool:
     except:
         return False
     return True
-def make_url_embeddable(url_in: list) -> list:
+async def is_ddinsta_url_working_async(url: str) -> bool:
+    async with httpx.AsyncClient() as client:
+        r = await client.get(url)
+        if re.search(regex_post_not_found, r.text):
+            return False
+        else:
+            return True
+
+async def make_url_embeddable(url_in: list) -> list:
     urls_out = []
     for url in url_in:
         if url.netloc in twitter_url:
@@ -38,7 +48,8 @@ def make_url_embeddable(url_in: list) -> list:
             urls_out.append(urllib.parse.urlunparse(new_url))
         elif url.netloc in instagram_url:
             new_url = url._replace(netloc=instagram_url_embeddable)
-            if is_ddinsta_url_working(urllib.parse.urlunparse(new_url)):
+            is_working = await is_ddinsta_url_working_async(urllib.parse.urlunparse(new_url))
+            if is_working:
                 urls_out.append(urllib.parse.urlunparse(new_url))
             else:
                 new_url = url._replace(netloc =instagram_url_embeddable_backup)
