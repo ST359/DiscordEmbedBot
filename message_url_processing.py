@@ -2,7 +2,6 @@ import urllib.parse
 import re
 import requests
 import httpx
-from bs4 import BeautifulSoup
 
 regex_post_not_found = r"(content=\"Post not found\"|content=\"Post might not be available\")"
 regex_not_spoiler = r"(https?://(?:www\.)?(?:twitter\.com|instagram\.com|x\.com)/[^\|\s]+)"
