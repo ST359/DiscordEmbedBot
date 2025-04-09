@@ -7,7 +7,6 @@ regex_post_not_found = r"(content=\"Post not found\"|content=\"Post might not be
 regex_not_spoiler = r"(https?://(?:www\.)?(?:twitter\.com|instagram\.com|x\.com)/[^\|\s]+)"
 regex_not_spoiler_ddinsta = r"(https?://(?:www\.)?(?:ddinstagram\.com)/[^\|\s]+)"
 regex_spoiler = r"(?:(?<=\|\|\s)|(?<=\|\|))(https?://(?:www\.)?(?:twitter\.com|instagram\.com|x\.com)/\S+)(?=\s*\|\|)"
-regex_appendix = r"\/\?\S*"
 instagram_url = ('www.instagram.com', 'instagram.com')
 twitter_url = ('twitter.com', 'x.com')
 instagram_url_embeddable = 'www.ddinstagram.com'
@@ -20,8 +19,6 @@ def extract_url_from_message(message: str) -> tuple:
     parsed_urls = [urllib.parse.urlparse(url) for url in raw_urls]
     return raw_urls, parsed_urls
 
-def remove_appendix_from_path(url_path: str) -> str:
-    return re.sub(regex_appendix, "", url_path)
 def does_contain_urls(message: str) -> bool:
     if len(extract_url_from_message(message)[0]) > 0:
         return True
@@ -61,9 +58,7 @@ async def make_url_embeddable(url_in: list) -> list:
                 final_id = get_final_reel_id(urllib.parse.urlunparse(url))
                 final_path = "/reel/"+final_id
                 url = url._replace(path=final_path)
-            new_url = url._replace(netloc=instagram_url_embeddable)
-            if "/?" in new_url.path:
-                new_url = new_url._replace(path=remove_appendix_from_path(new_url.path))
+            new_url = url._replace(netloc=instagram_url_embeddable)._replace(query="")
             is_working = await is_ddinsta_url_working_async(urllib.parse.urlunparse(new_url))
             if is_working:
                 urls_out.append(urllib.parse.urlunparse(new_url))
