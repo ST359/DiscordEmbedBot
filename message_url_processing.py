@@ -63,7 +63,7 @@ async def make_url_embeddable(url_in: list) -> list:
             if is_working:
                 urls_out.append(urllib.parse.urlunparse(new_url))
             else:
-                new_url = url._replace(netloc=instagram_url_embeddable_backup)
+                new_url = url._replace(netloc=instagram_url_embeddable_backup)._replace(query="")
                 urls_out.append(urllib.parse.urlunparse(new_url))
     return urls_out
 
