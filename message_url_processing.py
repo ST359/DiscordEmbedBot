@@ -39,7 +39,7 @@ async def is_ddinsta_url_working_async(url: str) -> bool:
     async with httpx.AsyncClient() as client:
         try:
             r = await client.get(url)
-            if re.search(regex_post_not_found, r.text) or r.status_code >= 400:
+            if re.search(regex_post_not_found, r.text) or r.status_code >= 400 or r.status_code == 302:
                 return False
             else:
                 return True
