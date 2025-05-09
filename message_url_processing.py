@@ -9,10 +9,13 @@ regex_not_spoiler_ddinsta = r"(https?://(?:www\.)?(?:ddinstagram\.com)/[^\|\s]+)
 regex_spoiler = r"(?:(?<=\|\|\s)|(?<=\|\|))(https?://(?:www\.)?(?:twitter\.com|instagram\.com|x\.com)/\S+)(?=\s*\|\|)"
 instagram_url = ('www.instagram.com', 'instagram.com')
 twitter_url = ('twitter.com', 'x.com')
-instagram_url_embeddable = 'www.ddinstagram.com'
-instagram_url_embeddable_backup = 'www.instagramez.com'
+instagram_url_embed_dd = 'www.ddinstagram.com'
+instagram_url_embed_ez = 'www.instagramez.com'
+instagram_url_embed_kk = 'www.kkinstagram.com'
 twitter_url_embeddable = 'vxtwitter.com'
-
+headers = {
+    "User-Agent": "Discordbot/2.0"
+}
 
 def extract_url_from_message(message: str) -> tuple:
     raw_urls = re.findall(regex_not_spoiler, message)
@@ -35,11 +38,11 @@ def is_ddinsta_url_working(url: str) -> bool:
     return True
 
 
-async def is_ddinsta_url_working_async(url: str) -> bool:
-    async with httpx.AsyncClient() as client:
+async def is_embed_url_working_async(url: str) -> bool:
+    async with httpx.AsyncClient(headers=headers) as client:
         try:
             r = await client.get(url)
-            if re.search(regex_post_not_found, r.text) or r.status_code >= 400 or r.status_code == 302:
+            if re.search(regex_post_not_found, r.text) or r.status_code >= 400 or r.status_code == 301:
                 return False
             else:
                 return True
@@ -58,12 +61,12 @@ async def make_url_embeddable(url_in: list) -> list:
                 final_id = get_final_reel_id(urllib.parse.urlunparse(url))
                 final_path = "/reel/"+final_id
                 url = url._replace(path=final_path)
-            new_url = url._replace(netloc=instagram_url_embeddable)._replace(query="")
-            is_working = await is_ddinsta_url_working_async(urllib.parse.urlunparse(new_url))
+            new_url = url._replace(netloc=instagram_url_embed_dd)._replace(query="")
+            is_working = await is_embed_url_working_async(urllib.parse.urlunparse(new_url))
             if is_working:
                 urls_out.append(urllib.parse.urlunparse(new_url))
             else:
-                new_url = url._replace(netloc=instagram_url_embeddable_backup)._replace(query="")
+                new_url = url._replace(netloc=instagram_url_embed_kk)._replace(query="")
                 urls_out.append(urllib.parse.urlunparse(new_url))
     return urls_out
 
