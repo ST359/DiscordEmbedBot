@@ -16,7 +16,14 @@ twitter_url_embeddable = 'vxtwitter.com'
 headers = {
     "User-Agent": "Discordbot/2.0"
 }
+embed_list = [instagram_url_embed_dd, instagram_url_embed_kk]
 
+def switch_lead_embed():
+    embed_list[0], embed_list[1] = embed_list[1], embed_list[0]
+    return
+
+def get_lead_embed():
+    return embed_list[0]
 def extract_url_from_message(message: str) -> tuple:
     raw_urls = re.findall(regex_not_spoiler, message)
     parsed_urls = [urllib.parse.urlparse(url) for url in raw_urls]
@@ -43,6 +50,7 @@ async def is_embed_url_working_async(url: str) -> bool:
         try:
             r = await client.get(url)
             if re.search(regex_post_not_found, r.text) or r.status_code >= 400 or r.status_code == 301:
+                print(f"{url}: {r.status_code}")
                 return False
             else:
                 return True
@@ -61,12 +69,13 @@ async def make_url_embeddable(url_in: list) -> list:
                 final_id = get_final_reel_id(urllib.parse.urlunparse(url))
                 final_path = "/reel/"+final_id
                 url = url._replace(path=final_path)
-            new_url = url._replace(netloc=instagram_url_embed_dd)._replace(query="")
+ #          new_url = url._replace(netloc=instagram_url_embed_dd)._replace(query="")
+            new_url = url._replace(netloc=embed_list[0])._replace(query="")
             is_working = await is_embed_url_working_async(urllib.parse.urlunparse(new_url))
             if is_working:
                 urls_out.append(urllib.parse.urlunparse(new_url))
             else:
-                new_url = url._replace(netloc=instagram_url_embed_kk)._replace(query="")
+                new_url = url._replace(netloc=embed_list[1])._replace(query="")
                 urls_out.append(urllib.parse.urlunparse(new_url))
     return urls_out
 

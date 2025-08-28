@@ -1,11 +1,10 @@
 import discord
 from discord.ext.commands import Bot
 from message_url_processing import make_url_embeddable, extract_url_from_message, does_contain_urls, \
-    replace_urls_with_embeddables
+    replace_urls_with_embeddables, switch_lead_embed, get_lead_embed
 from video_convertion import convert_video
 from switch_layout import switch_en_to_ru
 import os
-import json
 
 intents = discord.Intents.default()
 intents.messages = True
@@ -27,8 +26,10 @@ async def process_attachment_to_convert(message):
 @client.command(name='blya')
 async def switch_lang(ctx):
     await switch_en_to_ru(ctx)
-
-
+@client.command(name='switch_embed')
+async def switch_embed(ctx):
+    switch_lead_embed()
+    await ctx.message.channel.send(f"Current lead embed link: {get_lead_embed()}")
 @client.command(name='convert')
 async def convert(ctx):
     global is_enabled
